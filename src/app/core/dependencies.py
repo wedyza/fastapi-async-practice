@@ -4,6 +4,7 @@ from typing import Annotated
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 
+from src.app.core.exceptions import NotFoundException
 from src.app.core.security import decode_token
 from src.app.repositories import UserRepository
 from src.app.schemas.users import User
@@ -35,9 +36,9 @@ async def auth_user(
     email: str = payload.get("sub")  # pyright: ignore[reportAssignmentType]
     if email is None:  # pyright: ignore[reportUnnecessaryComparison]
         raise credentials_exception
-
-    user = await service.get_user_by_email(email)
-    if user is None:
-        raise credentials_exception
+    try:
+        user = await service.get_user_by_email(email)
+    except NotFoundException as err:
+        raise credentials_exception from err
 
     return user

@@ -13,4 +13,4 @@ class UsersOrm(Base):
     email: Mapped[str] = mapped_column(Text, nullable=False, unique=True)
     is_admin: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     otp: Mapped[str] = mapped_column(Text, nullable=True, unique=False)
-    otp_created_at: Mapped[DateTime] = mapped_column(DateTime, nullable=True)
+    otp_created_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), nullable=True)

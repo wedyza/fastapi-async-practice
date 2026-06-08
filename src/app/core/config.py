@@ -1,3 +1,4 @@
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -6,6 +7,7 @@ class EmailSettings(BaseSettings):
     EMAIL_PORT: int
     EMAIL_USER: str
     EMAIL_PASSWORD: str
+    EMAIL_USE_SSL: bool
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf8", extra="ignore")
 
@@ -28,7 +30,8 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
     EMAIL_SETTINGS: EmailSettings = EmailSettings()  # pyright: ignore[reportCallIssue]
     REDIS_SETTINGS: RedisSettings = RedisSettings()
-    TEMPLATES_DIR: str = "app.templates"
+    TEMPLATES_DIR: str = "src.app.templates"
+    LAUNCHED_IN_CONTAINER: bool = False
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf8", extra="ignore")
 
