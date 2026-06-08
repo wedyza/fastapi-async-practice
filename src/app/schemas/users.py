@@ -8,7 +8,7 @@ class UserBase(BaseModel):
 
 
 class UserCreate(UserBase):
-    ...
+    success: bool
 
 
 class User(UserBase):

@@ -14,20 +14,3 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
-
-# async def run_web_app() -> None:
-#     server = uvicorn.Server(
-#         uvicorn.Config(
-#             app=app,
-#             host="localhost",
-#             port=8000
-#         )
-#     )
-#     await server.serve()
-
-# async def async_main() -> None:
-#     async with asyncio.TaskGroup() as task_group:
-#         task_group.create_task(run_web_app())
-
-# if __name__ == '__main__':
-#     asyncio.run(async_main())
