@@ -1,11 +1,15 @@
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from typing import Optional
 from uuid import UUID, uuid4
 
 from sqlalchemy import select, update
 
-from src.app.core.exceptions import AlreadyExistsException, NotFoundException, UncategorizedException
+from src.app.core.exceptions import (
+    AlreadyExistsException,
+    NotFoundException,
+    UncategorizedException,
+)
 from src.infrastructure.postgresql.db_engine import async_session_factory
 from src.infrastructure.postgresql.models import UsersOrm
 
@@ -26,7 +30,7 @@ class OtpRecord:
 
 
 class UserRepository:
-    async def get_user_by_email(self, email: str) -> UserRecord | None:
+    async def get_user_by_email(self, email: str) -> UserRecord:
         async with async_session_factory() as session:
             query = (
                 select(
@@ -110,3 +114,4 @@ class UserRepository:
             updated_user_id = update_result.scalar_one_or_none()
             if updated_user_id is None:
                 raise UncategorizedException("Что-то пошло не так...")
+            await session.commit()

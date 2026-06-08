@@ -9,6 +9,9 @@ class NotFoundException(CustomExceptionBase):
 class AlreadyExistsException(CustomExceptionBase):
     ...
 
+class WrongCredentialsException(CustomExceptionBase):
+    ...
+
 
 class CustomSystemExceptionBase(Exception):
     def __init__(self, detail: str) -> None:

@@ -1,16 +1,20 @@
 import smtplib
 from email.message import EmailMessage
+from pathlib import Path
 
 from celery import shared_task
+from fastapi.templating import Jinja2Templates
 from jinja2 import Template
-from starlette.templating import Jinja2Templates
 
-from app.core.config import settings
+from src.app.core.config import settings
+from src.app.core.decorators import async_picker
 
 
+@async_picker
 @shared_task
 def send_email_with_otp(to_email: str, otp: str) -> None:
-    templates = Jinja2Templates(directory=settings.TEMPLATES_DIR)
+    BASE_DIR = Path(__file__).parent.parent
+    templates = Jinja2Templates(directory=BASE_DIR / "templates")
     template: Template = templates.get_template(name="otp_email.html")
     html_content = template.render(otp=otp)
 
@@ -20,7 +24,8 @@ def send_email_with_otp(to_email: str, otp: str) -> None:
     message["To"] = to_email
     message["Subject"] = "Одноразовый пароль для авторизации"
 
-    with smtplib.SMTP_SSL(host=settings.EMAIL_SETTINGS.EMAIL_HOST, port = settings.EMAIL_SETTINGS.EMAIL_PORT) as smtp:
+    with smtplib.SMTP(host=settings.EMAIL_SETTINGS.EMAIL_HOST, port = settings.EMAIL_SETTINGS.EMAIL_PORT) as smtp:
+        smtp.starttls()
         smtp.login(
             user=settings.EMAIL_SETTINGS.EMAIL_USER,
             password=settings.EMAIL_SETTINGS.EMAIL_PASSWORD

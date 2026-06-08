@@ -19,12 +19,23 @@ async def register(email: str, service: Annotated[UserService, Depends(get_user_
     )
 
 
+@router.post(path="/login", response_model=UserCreate)
+async def login(email: str, service: Annotated[UserService, Depends(get_user_service)]):
+    user = await service.get_user_by_email(email)
+    await service.login_user(user)
+    return UserCreate(
+        email=user.email,
+        success=True
+    )
+
+
 @router.post("/validate-otp", response_model=Token)
-async def login(
+async def validate_otp(
     email: str,
+    otp: str,
     service: Annotated[UserService, Depends(get_user_service)],
 ):
-    user = await service.create_user(email)
-    access_token = create_access_token(data={"sub": user.email})
-    return Token(access_token=access_token, token_type="Bearer")
-
+    result = await service.validate_user_otp(email, otp)
+    if result:
+        access_token = create_access_token(data={"sub": email})
+        return Token(access_token=access_token, token_type="Bearer")
