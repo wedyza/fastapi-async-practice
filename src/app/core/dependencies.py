@@ -7,8 +7,10 @@ from fastapi.security import OAuth2PasswordBearer
 from src.app.core.exceptions import NotFoundException
 from src.app.core.security import decode_token
 from src.app.repositories import UserRepository
+from src.app.repositories.tasks import TaskRepository
 from src.app.schemas.users import User
 from src.app.services import UserService
+from src.app.services.tasks import TaskService
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
@@ -18,6 +20,11 @@ async def get_user_repostory() -> AsyncIterator[UserRepository]:
 async def get_user_service(repository: Annotated[UserRepository, Depends(get_user_repostory)]):
     yield UserService(repository=repository)
 
+async def get_task_repository() -> AsyncIterator[TaskRepository]:
+    yield TaskRepository()
+
+async def get_task_service(repository: Annotated[TaskRepository, Depends(get_task_repository)]):
+    yield TaskService(repository)
 
 async def auth_user(
     service: Annotated[UserService, Depends(get_user_service)],
