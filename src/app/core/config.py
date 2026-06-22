@@ -13,7 +13,7 @@ class EmailSettings(BaseSettings):
 
 
 class RedisSettings(BaseSettings):
-    REDIS_HOST: str = "redis"
+    REDIS_HOST: str = 'localhost'
     REDIS_PORT: int = 6379
     REDIS_DB: int = 0
 
@@ -24,6 +24,7 @@ class RedisSettings(BaseSettings):
         return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB}"
 
 class Settings(BaseSettings):
+    LAUNCHED_IN_CONTAINER: bool = True
     SECRET_KEY: str = "your-secret-key-change-in-production"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
@@ -31,7 +32,6 @@ class Settings(BaseSettings):
     EMAIL_SETTINGS: EmailSettings = EmailSettings()  # pyright: ignore[reportCallIssue]
     REDIS_SETTINGS: RedisSettings = RedisSettings()
     TEMPLATES_DIR: str = "src.app.templates"
-    LAUNCHED_IN_CONTAINER: bool = False
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf8", extra="ignore")
 

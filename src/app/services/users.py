@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta, timezone
 
 from src.app.core.exceptions import UncategorizedException, WrongCredentialsException
+from src.app.core.redis_settings import get_worker_client
 from src.app.repositories.users import UserRepository
 from src.app.schemas.users import User
-from src.app.tasks import send_email_with_otp
 
 
 class UserService:
@@ -32,13 +32,11 @@ class UserService:
         )
 
     async def login_user(self, user: User) -> User:
+        queue = await get_worker_client()
         result = await self._repository.fill_user_otp_data(user.email)
         if result is None:
             raise UncategorizedException('Возникла проблема во время отправки сообщения')
-        send_email_with_otp(
-            to_email=result.email,
-            otp=result.otp
-        )
+        await queue.enqueue_job('send_email_with_otp', result.email, result.otp)
         return user
 
     async def validate_user_otp(self, email: str, otp: str) -> bool:

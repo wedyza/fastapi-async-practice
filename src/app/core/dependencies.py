@@ -4,6 +4,7 @@ from typing import Annotated
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 
+from src.app.core.connect_manager import ConnectManager
 from src.app.core.exceptions import NotFoundException
 from src.app.core.security import decode_token
 from src.app.repositories import UserRepository
@@ -25,6 +26,9 @@ async def get_task_repository() -> AsyncIterator[TaskRepository]:
 
 async def get_task_service(repository: Annotated[TaskRepository, Depends(get_task_repository)]):
     yield TaskService(repository)
+
+async def get_connect_manager():
+    yield ConnectManager()
 
 async def auth_user(
     service: Annotated[UserService, Depends(get_user_service)],

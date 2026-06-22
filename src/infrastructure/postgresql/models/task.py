@@ -38,11 +38,6 @@ class TasksOrm(Base):
     __tablename__: str = "tasks"
     __table_args__ = (  # pyright: ignore[reportAny, reportUnannotatedClassAttribute]
         _task_type_check("task_type", "tasks_type_check"),
-        UniqueConstraint(
-            "user_id",
-            "local_index",
-            name="tasks_user_id_local_index_unique"
-        )
     )
 
     id: Mapped[UUID] = mapped_column(Uuid, primary_key=True)
