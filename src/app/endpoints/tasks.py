@@ -4,8 +4,8 @@ from fastapi import APIRouter, Depends, WebSocket
 
 from src.app.core.connect_manager import ConnectManager
 from src.app.core.dependencies import auth_user, get_connect_manager, get_task_service
-from src.app.core.enums import TaskType
 from src.app.schemas import Task, User
+from src.app.schemas.tasks import CreateTask
 from src.app.services.tasks import TaskService
 
 router = APIRouter(prefix='/tasks', tags=['tasks'])
@@ -19,12 +19,11 @@ async def list_tasks(
 
 @router.post(path="", response_model=Task)
 async def create_task(
-    name: str,
-    task_type: TaskType,
+    payload: CreateTask,
     user: Annotated[User, Depends(auth_user)],
-    service: Annotated[TaskService, Depends(get_task_service)]
+    service: Annotated[TaskService, Depends(get_task_service)],
 ):
-    return await service.create_task(user.id, name, task_type)
+    return await service.create_task(user.id, payload.name, payload.task_type, payload.urls)
 
 @router.websocket(path="/ws", name="tasks-connect-ws")
 async def tasks_ws(
